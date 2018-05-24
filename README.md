@@ -1,6 +1,6 @@
 # Python Data Profiler
 
-This script can be run against any text file *with a header*. It will produce an excel file with stastics for each column and a topN distribution for each column.
+This script can be run against any text file **with a header**. It will produce an excel file with stastics for each column and a topN distribution for each column.
 
 
 python data_profiler.py "file location" "excel/text" "save location" topN "delimiter"
