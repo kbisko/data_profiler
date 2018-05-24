@@ -103,8 +103,5 @@ def distributions(df, returned_number, excel_writer):
 main()
 
 #call the main function
-#python data_profiler.py "/Users/kristenbiskobin/Documents/Oncology 2017.xlsx" "excel" "/Users/kristenbiskobin/Documents/" 20
-#python data_profiler.py "/Users/kristenbiskobin/Documents/Oncology 2017.txt" "text" "/Users/kristenbiskobin/Documents/" 20 "|"
-#python data_profiler.py "/Users/kristenbiskobin/Documents/Oncology 2017.csv" "text" "/Users/kristenbiskobin/Documents/" 20
-
-#python data_profiler.py "/Users/kristenbiskobin/Desktop/swhp_oncology_claims_20180522.txt" "text" "/Users/kristenbiskobin/Documents/" 100 "|"
+#python data_profiler.py "file location" "excel" "save location" topN delimiter
+#python data_profiler.py "file location" "text" "save location" 20 "|"
