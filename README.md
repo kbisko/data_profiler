@@ -5,14 +5,14 @@ This script can be run against any text file *with a header*. It will produce an
 
 python data_profiler.py "file location" "excel/text" "save location" topN "delimiter"
 
- >> python data_profiler.py "/home/data/file.txt" "text" "home/documents/eval_distro/" 50 "|"
-
 The input parameters are: 
 1. File location - this should be the full path and file name you want to evaluate.
 2. Is it an excel or a text file?
 3. Save location - the path to where the output should be saved. this should not include the output file name, that is created automatically as the original file name with a suffix of _eval_dist.xlsx
 4. How many entries would you like included in the column distributions
 5. Whats the delimiter -- this is unnecessary for excel files and defaults to comma delimited for text files. 
+
+ >> python data_profiler.py "/home/data/file.txt" "text" "home/documents/eval_distro/" 50 "|"
 
 The output statistics include:
 1. data type -- this currently is only numeric or string
