@@ -5,33 +5,41 @@ import numpy as np
 import xlrd
 import re
 import xlsxwriter
+import csv
 
 def main():
     file = sys.argv[1]  #full file location and name
     file_type = sys.argv[2].lower()  #excel or text
     save_loc = sys.argv[3] #file location
     top_number = int(sys.argv[4]) #how many do you want to see in the distributions
-    if len(sys.argv)<6:
-        delimiter = ','
+     # whats the delimiter of the file 
+    if file_type == 'text':
+        sniffer = csv.Sniffer()
+        line = open(file).readline()
+        delimiter = sniffer.sniff(line).delimiter
     else:
-        delimiter = sys.argv[5] # whats the delimiter of the file 
+        delimiter = None
+
     eval_and_dist(file, file_type, save_loc, top_number, delimiter)
-    print 'File has been saved in '+ save_loc
+    print ('Output has been saved in '+ save_loc)
 
 
 ## Runs the evaluation and distribution with the input file and saves the output as an excel file.
 def eval_and_dist(input_file, file_type, save_location, top_n, delimiter):
     ## currently accepts 2 file types excel or csv. if csv it must have a header
     if file_type == 'excel':
-        df = pd.read_excel(input_file).applymap(lambda x: x.strip() if type(x) is str else x)
+        df = pd.read_excel(input_file, low_memory=False).applymap(lambda x: x.strip() if type(x) is str else x)
     else :
-        df = pd.read_csv(input_file, sep=delimiter).applymap(lambda x: x.strip() if type(x) is str else x)
+        df = pd.read_csv(input_file, sep=delimiter, low_memory=False).applymap(lambda x: x.strip() if type(x) is str else x)
     #removes the file extension from the file name to use as the saved file name    
     file_name = re.findall(r'[^/]+$', input_file)[0].split('.')[0] 
     #creates the excel file to store everything in
     writer = pd.ExcelWriter(save_location+file_name+'_eval_dist.xlsx', engine='xlsxwriter')
+    print ('File Loaded...')
     evaluations(df, writer)
+    print ('Evaluation Completed...')
     distributions(df, top_n, writer)
+    print ('Distributions Completed...')
     writer.save()
 
 ## Runs evaluations on each column of the file
@@ -40,8 +48,8 @@ def evaluations(df, excel_writer):
     cols = df.columns
     # loops through each column and calculates the values
     for i in cols:
-        minu = df[i].min()
-        maxu =df[i].max()
+        minu = df[i].dropna().min()
+        maxu =df[i].dropna().max()    
         dist = df[i].value_counts().count()
         non_nulls = df[i].count()
         tots = len(df[i])
@@ -91,7 +99,8 @@ def distributions(df, returned_number, excel_writer):
             cols = cols[-1:] + cols[:-1]
             #all values are returned as string so as not to lose any data
             df4 = df3[cols]#.applymap(str)
-            df4['perc']= df3['count']/tot_rows
+            #df4.loc[:,'perc'] = df4.loc[:,'count']/tot_rows
+            df4 = df4.assign(perc=df4.loc[:,'count']/tot_rows)
             df4.to_excel(excel_writer, i[:29]) #excel tabs max size is 30 so truncate field names
 
             worksheet = excel_writer.sheets[i[:29]]   
@@ -103,5 +112,8 @@ def distributions(df, returned_number, excel_writer):
 main()
 
 #call the main function
-#python data_profiler.py "file location" "excel" "save location" topN delimiter
-#python data_profiler.py "file location" "text" "save location" 20 "|"
+#python data_profiler.py "file location" "excel" "save location" topN
+#python data_profiler.py "file location" "text" "save location" 20
+
+#python data_profiler.py "/Users/kristenbiskobin/Desktop/RXSHARE_OA_RX_CLAIMS_CAID_02v2.txt_201806080924.txt" "text" "/Users/kristenbiskobin/Documents/Evla&Distros/" 100
+
