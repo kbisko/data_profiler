@@ -9,16 +9,17 @@ import csv
 
 def main():
     file = sys.argv[1]  #full file location and name
-    file_type = sys.argv[2].lower()  #excel or text
-    save_loc = sys.argv[3] #file location
-    top_number = int(sys.argv[4]) #how many do you want to see in the distributions
+    save_loc = sys.argv[2] #file location
+    top_number = int(sys.argv[3]) #how many do you want to see in the distributions
+    file_type = re.findall(r'[^/]+$', file)[0].split('.')[1].lower()  #excel or text    
+     
      # whats the delimiter of the file 
-    if file_type == 'text':
+    if file_type == 'xlsx':
+        delimiter = None
+    else:
         sniffer = csv.Sniffer()
         line = open(file).readline()
         delimiter = sniffer.sniff(line).delimiter
-    else:
-        delimiter = None
 
     eval_and_dist(file, file_type, save_loc, top_number, delimiter)
     print ('Output has been saved in '+ save_loc)
@@ -27,7 +28,7 @@ def main():
 ## Runs the evaluation and distribution with the input file and saves the output as an excel file.
 def eval_and_dist(input_file, file_type, save_location, top_n, delimiter):
     ## currently accepts 2 file types excel or csv. if csv it must have a header
-    if file_type == 'excel':
+    if file_type == 'xlsx':
         df = pd.read_excel(input_file, low_memory=False).applymap(lambda x: x.strip() if type(x) is str else x)
     else :
         df = pd.read_csv(input_file, sep=delimiter, low_memory=False).applymap(lambda x: x.strip() if type(x) is str else x)
@@ -112,8 +113,7 @@ def distributions(df, returned_number, excel_writer):
 main()
 
 #call the main function
-#python data_profiler.py "file location" "excel" "save location" topN
-#python data_profiler.py "file location" "text" "save location" 20
+#python3 data_profiler.py "file location" "save location" topN
 
-#python data_profiler.py "/Users/kristenbiskobin/Desktop/RXSHARE_OA_RX_CLAIMS_CAID_02v2.txt_201806080924.txt" "text" "/Users/kristenbiskobin/Documents/Evla&Distros/" 100
+#python3 data_profiler.py "/Users/kristenbiskobin/Desktop/RXSHARE_OA_RX_CLAIMS_CAID_02v2.txt_201806080924.txt" "/Users/kristenbiskobin/Documents/Evla&Distros/" 10
 
