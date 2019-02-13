@@ -5,21 +5,23 @@ import numpy as np
 import xlrd
 import re
 import xlsxwriter
-import csv
+#import csv
+import os
 
 def main():
     file = sys.argv[1]  #full file location and name
     save_loc = sys.argv[2] #file location
     top_number = int(sys.argv[3]) #how many do you want to see in the distributions
     file_type = re.findall(r'[^/]+$', file)[0].split('.')[1].lower()  #excel or text    
+    delimiter = sys.argv[4]
      
      # whats the delimiter of the file 
-    if file_type == 'xlsx':
-        delimiter = None
-    else:
-        sniffer = csv.Sniffer()
-        line = open(file).readline()
-        delimiter = sniffer.sniff(line).delimiter
+    # if file_type == 'xlsx':
+    #     delimiter = None
+    # else:
+    #     sniffer = csv.Sniffer()
+    #     line = open(file).readline()
+    #     delimiter = sniffer.sniff(line).delimiter
 
     eval_and_dist(file, file_type, save_loc, top_number, delimiter)
     print ('Output has been saved in '+ save_loc)
@@ -76,8 +78,8 @@ def evaluations(df, excel_writer):
     worksheet.set_column('D:H',12, format_int)
     worksheet.set_column('L:M',df_final['sum'].apply(str).str.len().max() + 3, format_dec)
     worksheet.set_column('B:B',df_final['column'].apply(str).str.len().max() + 1)
-    worksheet.set_column('J:J',df_final['min'].apply(str).str.len().max() + 1)
-    worksheet.set_column('K:K',df_final['max'].apply(str).str.len().max() + 1)
+    worksheet.set_column('J:J',30)
+    worksheet.set_column('K:K',30)
 
 ## Runs distributions of the top X values of each column of the file    
 def distributions(df, returned_number, excel_writer):
@@ -111,9 +113,3 @@ def distributions(df, returned_number, excel_writer):
             worksheet.set_column('D:D',df4['count'].apply(str).str.len().max() + 3, format_int)         
 
 main()
-
-#call the main function
-#python3 data_profiler.py "file location" "save location" topN
-
-#python3 data_profiler.py "/Users/kristenbiskobin/Desktop/RXSHARE_OA_RX_CLAIMS_CAID_02v2.txt_201806080924.txt" "/Users/kristenbiskobin/Documents/Evla&Distros/" 10
-
